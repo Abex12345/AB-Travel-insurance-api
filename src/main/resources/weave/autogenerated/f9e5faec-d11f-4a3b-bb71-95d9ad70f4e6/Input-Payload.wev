@@ -1,0 +1,16 @@
+%dw 2.0
+
+type auto_f9e5faec_d11f_4a3b_bb71_95d9ad70f4e6_Input_Payload = {|
+  error: {|
+    message: String | Null, 
+    Type: org_mule_runtime_api_message_ErrorType | Null
+  |}
+|}
+type org_mule_runtime_api_message_ErrorType = {|
+  identifier?: String, 
+  namespace?: String, 
+  parentErrorType?: org_mule_runtime_api_message_ErrorType
+|} {"typeId": "org.mule.runtime.api.message.ErrorType"}
+
+
+
