@@ -1,0 +1,51 @@
+#%RAML 1.0
+title: Travel Document
+uses:
+  dataTypes: library/library.raml
+/qoute:
+  get:
+    queryParameters:
+      age:
+        type: number
+        description: age of a persone who is intersted in travel insurance
+        minimum: 1
+        maximum: 65
+        example: 32
+        required: true
+      destination:
+        description: place where a person willing to travel
+        type: string
+        example: "Asia"
+        required: true  
+      tripStartdate:
+        description: starting date of journy in "yyyy-mm-dd" format
+        type: date-only
+        required: true
+        example: "2023-04-01"
+      tripEnddate:
+        description: End date of journy in "yyyy-mm-dd" format
+        type: date-only
+        required: true
+        example: "2023-04-15"
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              !include ./examples/getQuoteResponse.json
+
+/policy:
+  post:
+    headers:
+      username:
+        description: "the person who uses the application"
+        type: string
+        required: true
+        maxLength: 50
+    body:
+      application/json:
+        type: dataTypes.createPolicyType
+        example: !include ./examples/createPolicyRequest.json
+          
+
+          
