@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="policy-test-suite.xml" />
+	<global-property doc:name="Global Property" doc:id="77d2ad51-bbec-41af-a30a-08a77361e5bc" name="env" value="qa" />
+	<munit:test name="policy-test-suite-create-policy-sub-flowTest" doc:id="97fc5329-0137-46b5-b904-3a3160b73628" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="write" doc:id="4f183379-2256-473b-90da-ba9b2d6fd737" processor="file:write">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Write" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="04649c6b-b028-454a-9ec0-0f1b96baa287" >
+				<munit:payload value='{&#10;	"personalDetails": {&#10;	   "name": "Miki",&#10;	   "dateOfBirth": "1999-01-01",&#10;	   "address": "USA"&#10;	},&#10;	"trip": {&#10;	  "destination": "Ethiopia",&#10;	   "tripStartDate": "2023-04-18",&#10;	   "tripEndDate": "2023-04-30"&#10;	},&#10;	"plan": {&#10;	   "planName": "gold",&#10;	   "premium": 300,&#10;	   "coverage": 25000&#10;	},&#10;	"purchaceDate": "2023-04-10"&#10;}' mediaType="application/json" />
+				<munit:attributes value='{&#10;  "headers":&#10;    {&#10;       "username": "Tola"&#10;     }&#10;&#10;}' mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to create-policy-sub-flow" doc:id="9431074b-ef5f-4647-adfc-7583120dfb5c" name="create-policy-sub-flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="verify successfull message" doc:id="588ee6fe-dfb4-4efd-a1bd-873cf29c3f0b" actual="#[payload.message]" expected='#["policy created successfully"]'/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

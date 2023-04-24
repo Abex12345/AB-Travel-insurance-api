@@ -1,0 +1,18 @@
+{
+	"personalDetails": {
+	   "name": "Abes",
+	   "dateOfBirth": "1990-01-01",
+	   "address": "USA"
+	},
+	"trip": {
+	  "destination": "Kenya",
+	   "tripStartDate": "2023-04-10",
+	   "tripEndDate": "2023-04-25"
+	},
+	"plan": {
+	   "planName": "gold",
+	   "premium": 300,
+	   "coverage": 25000
+	},
+	"purchaceDate": "2023-04-10"
+}
