@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd  http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+    <http:listener-config name="travel-document-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <apikit:config name="travel-document-config" api="resource::f54650db-55b7-4072-baa3-0a08d74db578:travel-document:1.0.2:raml:zip:travel-document.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <configuration-properties doc:name="Configuration properties" doc:id="ecc38a43-8864-414f-bd3e-5e3fa2336efe" file="config/${env}.properties" />
+    <flow name="travel-document-main">
+        <http:listener config-ref="travel-document-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="travel-document-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{ 
+	error:
+	  {"message": error.description,
+	  	"Type": error.errorType }
+	  	
+}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+                <flow-ref doc:name="set-error-responce-sub_Flow" doc:id="06a00547-762a-42e9-bf86-2a4cdb037016" name="set-error-responce-sub_Flow" />
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+                <flow-ref doc:name="set-error-responce-sub_Flow" doc:id="2fcc8549-3bcd-409e-bd1e-32bd0c20b365" name="set-error-responce-sub_Flow" />
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+                <flow-ref doc:name="set-error-responce-sub_Flow" doc:id="b0746c3c-0877-4e29-83a3-84835842cdc7" name="set-error-responce-sub_Flow" />
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+                <flow-ref doc:name="set-error-responce-sub_Flow" doc:id="7a470b82-3db7-46d7-a81f-e5f43e9e16e9" name="set-error-responce-sub_Flow" />
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+                <flow-ref doc:name="set-error-responce-sub_Flow" doc:id="bd9da563-619d-494d-b29d-12ad426fad4a" name="set-error-responce-sub_Flow" />
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+                <flow-ref doc:name="set-error-responce-sub_Flow" doc:id="9c55d773-332b-4e17-87e5-0e74ae7607d4" name="set-error-responce-sub_Flow" />
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="travel-document-console">
+        <http:listener config-ref="travel-document-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="travel-document-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+                <flow-ref doc:name="set-error-responce-sub_Flow" doc:id="0646aed1-e34a-491e-b02e-faf7cbb0f453" name="set-error-responce-sub_Flow" />
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="get:\qoute:travel-document-config">
+        <flow-ref doc:name="get-quote-Sub_Flow" doc:id="790dd988-8844-41d6-9210-464f6c9be18d" name="get-quote-Sub_Flow" />
+    </flow>
+    <flow name="post:\policy:application\json:travel-document-config">
+        <flow-ref doc:name="create-policy-sub-flow" doc:id="2f8cafcd-c79f-4e16-8165-f5427fb6aafd" name="create-policy-sub-flow" />
+    </flow>
+    <flow name="get:\policy\(policiID):travel-document-config">
+		<flow-ref doc:name="get-policy-details-sub-flow" doc:id="3672a51e-31c3-4779-9a01-2d00860f0e7a" name="get-policy-details-sub-flow"/>
+    </flow>
+</mule>

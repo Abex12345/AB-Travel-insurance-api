@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+	<configuration doc:name="Configuration" doc:id="a017c930-921f-4038-b0a7-b2586b6fe6d8" defaultErrorHandler-ref="globalError_Handler" />
+	<api-gateway:autodiscovery apiId="${id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="a8634b1f-1c4f-48f1-81c9-f7e0a777ef68" flowRef="travel-document-main" />
+	<error-handler name="globalError_Handler" doc:id="5a264a64-7e49-467e-93fc-40d66752fe1b" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="810491e1-1289-4743-a070-6397ab68fb5d" >
+			<logger level="INFO" doc:name="error" doc:id="785a089d-5e29-4543-89f6-d4a21e054824" message="error occured"/>
+		</on-error-propagate>
+	</error-handler>
+	<sub-flow name="set-error-responce-sub_Flow" doc:id="cdc9c4b4-0a05-4367-a454-3803ba81524d" >
+		<ee:transform doc:name="Transform Message" doc:id="7d63bfc6-3811-4993-83ee-de93c61a6b8d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{ 
+	error:
+	  {"message": error.description,
+	  	"Type": error.errorType.identifier}
+	  	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>
