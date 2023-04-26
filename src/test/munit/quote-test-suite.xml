@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="quote-test-suite.xml" />
+	<munit:test name="quote-test-suite-get-quote-Sub_FlowTest" doc:id="0c502ab5-3c92-49ba-adea-b33e61c9a78c" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="fc2d36bc-6eeb-473f-ad56-97b8ebe58fca" >
+				<munit:attributes value='{&#10;    "queryParams":&#10;           {"destination": "Kenya",&#10;            "age": 45,&#10;            "tripStartdate": "2023-04-10",&#10;            "tripEnddate":  "2023-04-25"&#10;               }&#10; }      ' mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to get-quote-Sub_Flow" doc:id="5ef3f496-0058-4bcc-a3b2-b33df1c605ac" name="get-quote-Sub_Flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="7e1016f5-2270-472f-bc15-52249d6989f7" actual="#[payload[0].premium]" expected="#[160]" message="premium for gold plan should be 160"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

@@ -1,0 +1,19 @@
+{
+	"personalDetails": {
+	   "name": "Tagel",
+	   "dateOfBirth": "1999-01-01",
+	   "address": "USA"
+	},
+	"trip": {
+	  "destination": "Ethiopia",
+	   "tripStartDate": "2023-04-18",
+	   "tripEndDate": "2023-04-30"
+	},
+	"plan": {
+	   "planName": "gold",
+	   "premium": 300,
+	   "coverage": 25000
+	},
+	"purchaceDate": "2023-04-10"
+	
+}
