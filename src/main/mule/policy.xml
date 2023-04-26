@@ -55,4 +55,46 @@ output application/json
 		</ee:transform>
 		<logger level="INFO" doc:name="request completed " doc:id="5b9d281e-f580-4dea-a157-5e7f6a23ecd5" message="request completed successfully for creating policy"/>
 	</sub-flow>
+	<sub-flow name="get-policy-details-sub-flow" doc:id="aa450570-d738-404b-9d8e-1d47e1dd188a" >
+		<logger level="INFO" doc:name="request recived" doc:id="8870cd5c-2b34-47aa-bc86-3e5019f1d9cd" message="request recived to get policy details"/>
+		<ee:transform doc:name="set variables" doc:id="8ba94d0a-9f44-4056-b189-275e7831b4a7" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="policyID" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.uriParams.policyID]]></ee:set-variable>
+				<ee:set-variable variableName="folderLocation" ><![CDATA[%dw 2.0
+output application/json
+---
+p("policyFolderLocation")]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<try doc:name="Try" doc:id="9a37a8d8-eb44-4a47-beb2-9d92dc54aa18" >
+			<file:read doc:name="Read" doc:id="3af9989b-8991-4798-8e05-1e6871b97556" path='#[vars.folderLocation ++ vars.policyid ++ ".json"]' />
+			<error-handler>
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="2e8a2b96-6636-4eb9-ac8b-f640a4be23f1" >
+					<ee:transform doc:name="set error response" doc:id="ecfda446-1072-40bf-bb4c-ed6e8f93519b" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status": "failed",
+	"message": "policyID you have provided is invalid"
+}]]></ee:set-payload>
+						</ee:message>
+						<ee:variables >
+							<ee:set-variable variableName="httpStatus" ><![CDATA[%dw 2.0
+output application/json
+---
+400]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<logger level="INFO" doc:name="request completed " doc:id="4ed15c81-32e8-4e49-96aa-1dc3d7e39467" message="request completed to get policy details"/>
+	</sub-flow>
 </mule>
